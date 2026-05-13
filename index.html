@@ -421,38 +421,38 @@ tr.is-od:hover{background:rgba(224,58,58,.07);}
 // DATA
 // ════════════════════════════════════
 const BUILTIN_CSV = `ID Pinjaman,Email_Peminjam,Nama Peminjam,Jenis Pemohon,Status Fakulti,Tarikh Pinjam,Status,Email_Admin,Tarikh_Sah,ID_Alat,ID_Alat_2,ID_Alat_3,Tarikh_Jangka_Pulang,Tarikh_Pulang_Sebenar,Catatan_Peminjam,Catatan_Admin
-PJM-20260421-153002,mirzan@utm.my,Mirzan Firdaus,Staf,FKA,21/04/2026 15.30.46,Diluluskan,kamalm@utm.my,21/04/2026,IA0001228,,,22/04/2026,22/04/2026,Kegunaan BDR,Telah Dipulangkan
-PJM-20260429-102845,mohamadshazwan@utm.my,Dr.Shazwan,Staf,FKA,01/02/2025 12.30.00,Diluluskan,,,IA0001236,,,03/01/2025,03/01/2025,Kelas,telah dipulangkan
-PJM-20260429-104216,mohdkhairulidlan@utm.my,Dr.Khairul Idlan,Staf,FKA,07/01/2025 09.42.00,Diluluskan,it_fka@utm.my,29/04/2026,HA 0011383,,,10/01/2025,,Workshop,
-PJM-20260429-104451,kamalm@utm.my,Kamal,Staf,FKA,24/02/2025 16.30.00,Diluluskan,it_fka@utm.my,29/04/2026,HA0028126,,,,,Buat montaj,
-PJM-20260429-104841,shahrizani@utm.my,Shahrizan,Staf,Bukan FKA,25/02/2025 14.30.00,Diluluskan,it_fka@utm.my,29/04/2026,IA0001222,,,04/03/2025,,Seminar Empower women,
-PJM-20260429-105336,,Nadzir Hashim,Staf,Bukan FKA,10/04/2025 10.54.00,Diluluskan,it_fka@utm.my,29/04/2026,IA0001250,IA0001251,,14/04/2025,,,
-PJM-20260429-110738,,Dr.Norhidayah Hassan,Staf,FKA,17/04/2026 14.08.00,Diluluskan,it_fka@utm.my,29/04/2026,IA0001228,,,,,Meeting,
-PJM-20260429-110906,,Faizatulaszhar,Staf,FKA,17/04/2025 09.09.00,Diluluskan,it_fka@utm.my,29/04/2026,HA0043148,,,,,Mesyuarat/bengkel,
-PJM-20260429-113625,,Muhammad Safi hakimi bin Safian,Pelajar,FKA,25/04/2025 14.30.00,Diluluskan,it_fka@utm.my,29/04/2026,HA011254,hdmi01,,,,My STEM Bridge Challenge,
-PJM-20260429-114508,kamalm@utm.my,Kamal,Staf,FKA,25/04/2025 14.45.00,Diluluskan,it_fka@utm.my,29/04/2026,9C224956Q,,,,,Buat kerja dirumah,
-PJM-20260506-091201,mohdkhidir@utm.my,MOHD KHIDIR KHALID,Staf,FKA,06/05/2026 09.12.00,Diluluskan,it_fka@utm.my,06/05/2026,HA 0011383,,,06/05/2026,06/05/2026,Terima kasih.,telah dipulangkan
-PJM-20260511-090303,,Dr.Khairul Idlan,Staf,FKA,04/05/2025 21.04.10,Diluluskan,kamalm@utm.my,11/05/2026,HA011254,IA0001252,IA0001252,13/05/2025,,Bengkel,
-PJM-20260511-090632,,Safi,Pelajar,FKA,13/05/2025 10.07.20,Diluluskan,kamalm@utm.my,11/05/2026,IA0001222,,,16/05/2025,,Karnival Sukan FKA 2025,
-PJM-20260511-090833,,Nur Nisa Sabrina,Staf,FKA,16/05/2025 09.08.58,Diluluskan,kamalm@utm.my,11/05/2026,HA 0011383,,,19/05/2025,,SEMKA,
-PJM-20260511-091010,,Mazidah,Staf,FKA,28/05/2025 09.16.42,Diluluskan,,,IA0001236,,,02/06/2025,,Program di makmal komputer,
-PJM-20260511-091833,,Afiq Hakeem,Pelajar,FKA,11/06/2025 11.20.05,Diluluskan,kamalm@utm.my,11/05/2026,IA0001250,,,,,MAFKA 2025,
-PJM-20260511-092209,,Dr.Nadirah Darus,Staf,FKA,11/06/2025 09.25.38,Diluluskan,kamalm@utm.my,11/05/2026,HA011254,,,,,Mesyuarat,
-PJM-20260511-092618,,Kamal,Staf,FKA,13/06/2025 09.26.54,Diluluskan,kamalm@utm.my,11/05/2026,HA 0011383,,,20/06/2025,,Tugasan dirumah,
-PJM-20260511-093144,,Mirzan Firdaus,Staf,FKA,24/06/2025 09.52.26,Diluluskan,kamalm@utm.my,11/05/2026,HA 0011383,,,,,Kerja dirumah,
-PJM-20260511-095519,,NORAHIZAN MAHAT,Staf,Bukan FKA,08/07/2025 09.56.37,Diluluskan,kamalm@utm.my,11/05/2026,HA011254,hdmi01,,21/07/2025,,Program Kolej Perdana,
-PJM-20260511-095821,,Kamal,Staf,FKA,17/07/2025 09.58.40,Diluluskan,kamalm@utm.my,11/05/2026,HA 0011383,,,21/07/2025,,Tugasan dirumah,
-PJM-20260511-095936,,Ermaniza,Staf,FKA,29/07/2025 10.00.27,Diluluskan,kamalm@utm.my,11/05/2026,HA0028126,,,13/08/2025,,Tugasan dirumah,
-PJM-20260511-100110,,Dr.Khairul Hazman,Staf,FKA,11/08/2025 10.01.39,Diluluskan,kamalm@utm.my,11/05/2026,HA0043148,hdmi01,,20/08/2025,,Conference GeoFiesta,
-PJM-20260511-100400,,Faizatulaszhar,Staf,FKA,09/09/2025 10.04.12,Diluluskan,kamalm@utm.my,11/05/2026,9C224956Q,,,25/02/2026,,Kegunaan Pelajar Praktikal,
-PJM-20260511-100507,,Dr.Ponselvi,Staf,FKA,19/09/2025 10.05.27,Diluluskan,kamalm@utm.my,11/05/2026,HA0028126,HA 0011383,9C224956Q,26/09/2025,,ICWR 2025 -Everly Putrajaya,
-PJM-20260511-101751,,Mohd Zaid,Staf,FKA,29/09/2025 10.18.00,Diluluskan,kamalm@utm.my,11/05/2026,HA0043148,Ext1,,01/10/2025,,Kursus,
-PJM-20260511-101906,,Suhaimai Sabil,Staf,Bukan FKA,01/10/2025 10.19.32,Diluluskan,kamalm@utm.my,11/05/2026,IA0001222,,,19/10/2026,,Pendaftaran Pelajar,
-PJM-20260511-102213,,Dr.Muhammad Hasbi,Staf,FKA,28/10/2025 10.22.29,Diluluskan,kamalm@utm.my,11/05/2026,IA0001252,,,14/11/2025,,Program gotong royong FKA,
-PJM-20260511-102334,azwin@utm.my,Azwin Ahmad,Staf,FKA,30/10/2025 10.24.08,Diluluskan,kamalm@utm.my,11/05/2026,HA0028126,,,,,Mesyuarat,
-PJM-20260511-102456,,Noriyati,Staf,FKA,03/11/2025 10.25.13,Diluluskan,kamalm@utm.my,11/05/2026,HA0043148,HA0043147,,,,Bengkel,
-PJM-20260511-102639,,Nazirul Hakim,Pelajar,FKA,17/11/2025 10.26.56,Diluluskan,,,IA0001252,,,18/12/2025,,Kem Pemantapan PEKA,
-PJM-20260511-102805,,Dr.Josilva,Staf,FKA,21/11/2025 10.28.27,Diluluskan,,,IA0001251,Ext1,,24/11/2025,,Program Strategik HHRE,`;
+PJM-20260421-153002,mirzan@utm.my,Mirzan Firdaus,Staf,FKA,21/04/2026 15.30.46,Diluluskan,kamalm@utm.my,21/4/2026,IA0001228,,,22/4/2026,22/4/2026,Kegunaan BDR,Telah Dipulangkan
+PJM-20260429-102845,mohamadshazwan@utm.my,Dr.Shazwan,Staf,FKA,01/02/2025 12.30.00,Diluluskan,,,IA0001236,,,3/1/2025,3/1/2025,Kelas,telah dipulangkan
+PJM-20260429-104216,mohdkhairulidlan@utm.my,Dr.Khairul Idlan,Staf,FKA,07/01/2025 09.42.00,Diluluskan,it_fka@utm.my,29/4/2026,HA 0011383,,,10/1/2025,10/1/2025,Workshop,
+PJM-20260429-104451,kamalm@utm.my,Kamal,Staf,FKA,24/02/2025 16.30.00,Diluluskan,it_fka@utm.my,29/4/2026,HA0028126,,,,1/3/2025,Buat montaj,
+PJM-20260429-104841,shahrizani@utm.my,Shahrizan,Staf,Bukan FKA,25/02/2025 14.30.00,Diluluskan,it_fka@utm.my,29/4/2026,IA0001222,,,4/3/2025,4/3/2025,Seminar Empower women,
+PJM-20260429-105336,,Nadzir Hashim,Staf,Bukan FKA,10/04/2025 10.54.00,Diluluskan,it_fka@utm.my,29/4/2026,IA0001250,IA0001251,,14/4/2025,14/4/2025,,
+PJM-20260429-110738,,Dr.Norhidayah Hassan,Staf,FKA,17/04/2026 14.08.00,Diluluskan,it_fka@utm.my,29/4/2026,IA0001228,,,,15/5/2025,Meeting,
+PJM-20260429-110906,,Faizatulaszhar,Staf,FKA,17/04/2025 09.09.00,Diluluskan,it_fka@utm.my,29/4/2026,HA0043148,,,,16/5/2025,Mesyuarat/bengkel,
+PJM-20260429-113625,,Muhammad Safi hakimi bin Safian,Pelajar,FKA,25/04/2025 14.30.00,Diluluskan,it_fka@utm.my,29/4/2026,HA011254,hdmi01,,,17/5/2025,My STEM Bridge Challenge,
+PJM-20260429-114508,kamalm@utm.my,Kamal,Staf,FKA,25/04/2025 14.45.00,Diluluskan,it_fka@utm.my,29/4/2026,9C224956Q,,,,18/5/2025,Buat kerja dirumah,
+PJM-20260506-091201,mohdkhidir@utm.my,MOHD KHIDIR KHALID,Staf,FKA,06/05/2026 09.12.00,Diluluskan,it_fka@utm.my,6/5/2026,HA 0011383,,,6/5/2026,16/5/2026,Terima kasih.,telah dipulangkan. Penerima Noranizam
+PJM-20260511-090303,,Dr.Khairul Idlan,Staf,FKA,04/05/2025 21.04.10,Diluluskan,kamalm@utm.my,11/5/2026,HA011254,IA0001252,IA0001252,13/5/2025,13/5/2025,Bengkel,
+PJM-20260511-090632,,Safi,Pelajar,FKA,13/05/2025 10.07.20,Diluluskan,kamalm@utm.my,11/5/2026,IA0001222,,,16/5/2025,16/5/2025,Karnival Sukan FKA 2025,
+PJM-20260511-090833,,Nur Nisa Sabrina,Staf,FKA,16/05/2025 09.08.58,Diluluskan,kamalm@utm.my,11/5/2026,HA 0011383,,,19/5/2025,19/5/2025,SEMKA,
+PJM-20260511-091010,,Mazidah,Staf,FKA,28/05/2025 09.16.42,Diluluskan,,,IA0001236,,,2/6/2025,2/6/2025,Program di makmal komputer,
+PJM-20260511-091833,,Afiq Hakeem,Pelajar,FKA,11/06/2025 11.20.05,Diluluskan,kamalm@utm.my,11/5/2026,IA0001250,,,,30/6/2025,MAFKA 2025,
+PJM-20260511-092209,,Dr.Nadirah Darus,Staf,FKA,11/06/2025 09.25.38,Diluluskan,kamalm@utm.my,11/5/2026,HA011254,,,,1/7/2025,Mesyuarat,
+PJM-20260511-092618,,Kamal,Staf,FKA,13/06/2025 09.26.54,Diluluskan,kamalm@utm.my,11/5/2026,HA 0011383,,,20/6/2025,20/6/2025,Tugasan dirumah,
+PJM-20260511-093144,,Mirzan Firdaus,Staf,FKA,24/06/2025 09.52.26,Diluluskan,kamalm@utm.my,11/5/2026,HA 0011383,,,,21/6/2025,Kerja dirumah,
+PJM-20260511-095519,,NORAHIZAN MAHAT,Staf,Bukan FKA,08/07/2025 09.56.37,Diluluskan,kamalm@utm.my,11/5/2026,HA011254,hdmi01,,21/7/2025,21/7/2025,Program Kolej Perdana,
+PJM-20260511-095821,,Kamal,Staf,FKA,17/07/2025 09.58.40,Diluluskan,kamalm@utm.my,11/5/2026,HA 0011383,,,21/7/2025,21/7/2025,Tugasan dirumah,
+PJM-20260511-095936,,Ermaniza,Staf,FKA,29/07/2025 10.00.27,Diluluskan,kamalm@utm.my,11/5/2026,HA0028126,,,13/8/2025,13/8/2025,Tugasan dirumah,
+PJM-20260511-100110,,Dr.Khairul Hazman,Staf,FKA,11/08/2025 10.01.39,Diluluskan,kamalm@utm.my,11/5/2026,HA0043148,hdmi01,,20/8/2025,20/8/2025,Conference GeoFiesta,
+PJM-20260511-100400,,Faizatulaszhar,Staf,FKA,09/09/2025 10.04.12,Diluluskan,kamalm@utm.my,11/5/2026,9C224956Q,,,25/2/2026,25/2/2026,Kegunaan Pelajar Praktikal,
+PJM-20260511-100507,,Dr.Ponselvi,Staf,FKA,19/09/2025 10.05.27,Diluluskan,kamalm@utm.my,11/5/2026,HA0028126,HA 0011383,9C224956Q,26/9/2025,26/9/2025,ICWR 2025 -Everly Putrajaya,
+PJM-20260511-101751,,Mohd Zaid,Staf,FKA,29/09/2025 10.18.00,Diluluskan,kamalm@utm.my,11/5/2026,HA0043148,Ext1,,1/10/2025,1/10/2025,Kursus,
+PJM-20260511-101906,,Suhaimai Sabil,Staf,Bukan FKA,01/10/2025 10.19.32,Diluluskan,kamalm@utm.my,11/5/2026,IA0001222,,,19/10/2026,19/10/2026,Pendaftaran Pelajar,
+PJM-20260511-102213,,Dr.Muhammad Hasbi,Staf,FKA,28/10/2025 10.22.29,Diluluskan,kamalm@utm.my,11/5/2026,IA0001252,,,14/11/2025,14/11/2025,Program gotong royong FKA,
+PJM-20260511-102334,azwin@utm.my,Azwin Ahmad,Staf,FKA,30/10/2025 10.24.08,Diluluskan,kamalm@utm.my,11/5/2026,HA0028126,,,,,Mesyuarat,
+PJM-20260511-102456,,Noriyati,Staf,FKA,03/11/2025 10.25.13,Diluluskan,kamalm@utm.my,11/5/2026,HA0043148,HA0043147,,,18/12/2025,Bengkel,
+PJM-20260511-102639,,Nazirul Hakim,Pelajar,FKA,17/11/2025 10.26.56,Diluluskan,,,IA0001252,,,18/12/2025,18/12/2025,Kem Pemantapan PEKA,
+PJM-20260511-102805,,Dr.Josilva,Staf,FKA,21/11/2025 10.28.27,Diluluskan,,,IA0001251,Ext1,,24/11/2025,24/11/2025,Program Strategik HHRE,`;
 
 const BN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogos','Sep','Okt','Nov','Dis'];
 const NOW = new Date();
