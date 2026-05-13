@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FKA · Dashboard Pinjaman IT 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<style>
+:root{
+  --ink:#0d0e0a;
+  --ink2:#3a3b35;
+  --ink3:#7a7b72;
+  --ink4:#b0b1a8;
+  --paper:#f5f4ef;
+  --paper2:#eeede7;
+  --paper3:#e4e3dc;
+  --lime:#c8f135;
+  --lime-dk:#9bbf1a;
+  --teal:#0ea47a;
+  --teal-lt:#d4f5eb;
+  --amber:#f5a623;
+  --amber-lt:#fef3dc;
+  --red:#e03a3a;
+  --red-lt:#fce8e8;
+  --blue:#2563eb;
+  --blue-lt:#dbeafe;
+  --surface:#ffffff;
+  --r:14px;--rs:9px;
+  --shadow:0 2px 12px rgba(0,0,0,.07),0 1px 3px rgba(0,0,0,.05);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.1),0 2px 8px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh;}
+.sidebar{background:var(--ink);color:#fff;padding:28px 20px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sb-logo-icon{width:38px;height:38px;background:var(--lime);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-logo-icon svg{width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.sb-logo-text{font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;line-height:1.3;}
+.sb-logo-sub{font-size:10px;opacity:.45;font-weight:400;}
+.sb-section{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin:16px 0 6px 8px;}
+.sb-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--rs);font-size:13px;font-weight:500;color:rgba(255,255,255,.55);cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;}
+.sb-link:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9);}
+.sb-link.active{background:var(--lime);color:var(--ink);font-weight:600;}
+.sb-link svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.sb-spacer{flex:1;}
+.sb-upload{margin-top:12px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);}
+.upload-label{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border:1.5px dashed rgba(255,255,255,.15);border-radius:var(--r);padding:12px 14px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.55);transition:all .2s;width:100%;}
+.upload-label:hover{border-color:var(--lime);color:var(--lime);}
+.upload-label svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0;}
+.upload-label input{display:none;}
+.sb-upd{font-size:10px;color:rgba(255,255,255,.25);text-align:center;margin-top:10px;}
+
+/* ── MAIN ── */
+.content{padding:32px 36px;overflow-x:hidden;}
+.page{display:none;}.page.active{display:block;}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;gap:16px;}
+.topbar-title{font-family:'Poppins',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1.15;}
+.topbar-sub{font-size:13px;color:var(--ink3);margin-top:3px;}
+.topbar-r{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--paper3);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:500;color:var(--ink2);box-shadow:var(--shadow);}
+.chip svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;}
+.chip.live .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse2 2s infinite;}
+@keyframes pulse2{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+.kpi{background:var(--surface);border:1px solid var(--paper3);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden;}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.kpi-accent{position:absolute;top:0;right:0;width:64px;height:64px;border-radius:0 var(--r) 0 64px;opacity:.08;}
+.kpi-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+.kpi-icon svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.kpi-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--ink3);margin-bottom:4px;}
+.kpi-val{font-family:'Poppins',sans-serif;font-size:32px;font-weight:800;letter-spacing:-1.5px;line-height:1;}
+.kpi-sub{font-size:11px;color:var(--ink3);margin-top:4px;}
+.kpi-trend{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:999px;margin-top:5px;}
+.kpi.k-lime .kpi-icon{background:#f0ffd4;}.kpi.k-lime .kpi-icon svg{stroke:var(--lime-dk);}.kpi.k-lime .kpi-val{color:var(--ink);}
+.kpi.k-teal .kpi-icon{background:var(--teal-lt);}.kpi.k-teal .kpi-icon svg{stroke:var(--teal);}.kpi.k-teal .kpi-val{color:var(--teal);}
+.kpi.k-amber .kpi-icon{background:var(--amber-lt);}.kpi.k-amber .kpi-icon svg{stroke:var(--amber);}.kpi.k-amber .kpi-val{color:var(--amber);}
+.kpi.k-red .kpi-icon{background:var(--red-lt);}.kpi.k-red .kpi-icon svg{stroke:var(--red);}.kpi.k-red .kpi-val{color:var(--red);}
+.kpi.k-blue .kpi-icon{background:var(--blue-lt);}.kpi.k-blue .kpi-icon svg{stroke:var(--blue);}.kpi.k-blue .kpi-val{color:var(--blue);}
+.kpi.k-ink .kpi-icon{background:var(--paper2);}.kpi.k-ink .kpi-icon svg{stroke:var(--ink2);}.kpi.k-ink .kpi-val{color:var(--ink);}
+
+/* ── OVERDUE BANNER ── */
+.od-banner{display:none;background:linear-gradient(135deg,#fce8e8,#fff5f5);border:1.5px solid rgba(224,58,58,.2);border-radius:var(--r);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;}
+.od-banner.hidden{display:none;}
+.od-banner-icon{width:40px;height:40px;background:var(--red-lt);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.od-banner-icon svg{width:18px;height:18px;stroke:var(--red);fill:none;stroke-width:2;stroke-linecap:round;}
+.od-banner-text h4{font-size:14px;font-weight:600;color:var(--red);}
+.od-banner-text p{font-size:12px;color:var(--ink3);margin-top:2px;}
+.od-list{margin-top:4px;font-size:11px;color:var(--red);font-family:'JetBrains Mono',monospace;}
+
+/* ── CHARTS ── */
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.charts-grid .span2{grid-column:1/-1;}
+.card{background:var(--surface);border:1px solid var(--paper3);border-radius:var(--r);padding:20px 22px;box-shadow:var(--shadow);}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.card-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;letter-spacing:-.2px;}
+.card-sub{font-size:11px;color:var(--ink3);margin-top:2px;}
+.chart-wrap{position:relative;}
+.leg{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
+.leg-i{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink2);}
+.leg-sq{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+
+/* ── FILTERS ── */
+.filter-bar{background:var(--surface);border:1px solid var(--paper3);border-radius:var(--r);padding:16px 20px;margin-bottom:16px;box-shadow:var(--shadow);}
+.filter-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;}
+.filter-grp{display:flex;flex-direction:column;gap:5px;flex:1;min-width:140px;}
+.filter-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--ink3);}
+.filter-grp select,.filter-grp input{background:var(--paper);border:1px solid var(--paper3);border-radius:var(--rs);padding:8px 12px;font-family:'Poppins',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border-color .15s;}
+.filter-grp select:focus,.filter-grp input:focus{border-color:var(--ink);background:var(--surface);}
+.filter-grp input::placeholder{color:var(--ink4);}
+.btn-reset{display:flex;align-items:center;gap:6px;background:var(--paper2);border:1px solid var(--paper3);border-radius:var(--rs);padding:8px 14px;font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;color:var(--ink2);cursor:pointer;white-space:nowrap;transition:all .15s;align-self:flex-end;}
+.btn-reset:hover{background:var(--ink);color:#fff;}
+.btn-reset svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;}
+
+/* ── TABLE ── */
+.tbl-card{background:var(--surface);border:1px solid var(--paper3);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);}
+.tbl-hdr{padding:16px 20px;border-bottom:1px solid var(--paper3);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.tbl-title-wrap .tbl-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;}
+.tbl-title-wrap .tbl-rc{font-size:11px;color:var(--ink3);margin-top:2px;}
+.tbl-sc{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--paper);}
+th{text-align:left;padding:10px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--ink3);border-bottom:1px solid var(--paper3);white-space:nowrap;}
+td{padding:12px 14px;font-size:12px;color:var(--ink);border-bottom:1px solid var(--paper2);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--paper);}
+tr.is-od{background:linear-gradient(90deg,rgba(224,58,58,.04),transparent);}
+tr.is-od:hover{background:rgba(224,58,58,.07);}
+.mono{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--ink3);}
+.alat-code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue);}
+.fw6{font-weight:600;}
+
+/* ── BADGES ── */
+.bdg{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;letter-spacing:.2px;}
+.bdg-dot{width:5px;height:5px;border-radius:50%;}
+.bdg-ok{background:var(--teal-lt);color:#0a7a5a;} .bdg-ok .bdg-dot{background:#0a7a5a;}
+.bdg-pending{background:var(--amber-lt);color:#a06800;} .bdg-pending .bdg-dot{background:#a06800;}
+.bdg-od{background:var(--red-lt);color:var(--red);} .bdg-od .bdg-dot{background:var(--red);}
+.bdg-staf{background:#f0ffd4;color:#5a7a00;border:1px solid #d4e88a;}
+.bdg-pel{background:var(--blue-lt);color:var(--blue);}
+.bdg-fka{background:var(--paper2);color:var(--ink2);border:1px solid var(--paper3);}
+.bdg-nonfka{background:#fff3e0;color:#c07000;border:1px solid #ffd580;}
+
+/* ── NODATA ── */
+.nodata{text-align:center;padding:48px 20px;color:var(--ink3);}
+.nodata svg{width:36px;height:36px;stroke:var(--ink4);fill:none;stroke-width:1.5;stroke-linecap:round;margin:0 auto 12px;display:block;}
+.nodata p{font-size:13px;}
+
+/* ── ANALITIK PAGE ── */
+.analytics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;}
+
+/* ── SENARAI ALAT PAGE ── */
+.alat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.alat-card{background:var(--surface);border:1px solid var(--paper3);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);transition:transform .15s;}
+.alat-card:hover{transform:translateY(-2px);}
+.alat-id{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--blue);margin-bottom:6px;}
+.alat-count{font-family:'Poppins',sans-serif;font-size:28px;font-weight:800;color:var(--ink);}
+.alat-lbl{font-size:11px;color:var(--ink3);margin-top:2px;}
+.alat-bar-wrap{margin-top:8px;background:var(--paper2);border-radius:4px;height:4px;overflow:hidden;}
+.alat-bar{height:4px;background:var(--lime-dk);border-radius:4px;transition:width .6s ease;}
+
+/* ── PEMINJAM PAGE ── */
+.peminjam-table .kpi-mini{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.badge-mini{font-size:10px;background:var(--paper2);color:var(--ink2);border-radius:999px;padding:2px 8px;}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-thumb{background:var(--paper3);border-radius:10px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{position:relative;height:auto;flex-direction:row;flex-wrap:wrap;padding:16px;}
+  .sb-logo{margin-bottom:0;padding-bottom:0;border-bottom:none;}
+  .sb-section{display:none;}
+  .sb-spacer{display:none;}
+  .content{padding:20px 16px;}
+  .charts-grid{grid-template-columns:1fr;}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- ── SIDEBAR ── -->
+<nav class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">
+      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    </div>
+    <div>
+      <div class="sb-logo-text">FKA IT<br>Dashboard</div>
+    </div>
+  </div>
+
+  <div class="sb-section">Menu</div>
+  <button class="sb-link active" onclick="showPage('overview')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Ringkasan
+  </button>
+  <button class="sb-link" onclick="showPage('rekod')">
+    <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+    Rekod Pinjaman
+  </button>
+  <button class="sb-link" onclick="showPage('alat')">
+    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    Inventori Alat
+  </button>
+  <button class="sb-link" onclick="showPage('overdue')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+    Overdue
+    <span id="sb-od-badge" style="display:none;margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:999px;"></span>
+  </button>
+  <button class="sb-link" onclick="showPage('peminjam')">
+    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    Peminjam
+  </button>
+
+  <div class="sb-spacer"></div>
+
+  <div class="sb-upload">
+    <label class="upload-label">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Upload CSV Baru
+      <input type="file" id="csvFile" accept=".csv">
+    </label>
+    <div class="sb-upd" id="sb-upd">Data: Built-in 2025</div>
+  </div>
+</nav>
+
+<!-- ── CONTENT ── -->
+<main class="content">
+
+  <!-- ════ OVERVIEW PAGE ════ -->
+  <div class="page active" id="page-overview">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Ringkasan Pinjaman</div>
+        <div class="topbar-sub">Sistem Pengurusan Peralatan IT — Fakulti Kejuruteraan Awam</div>
+      </div>
+      <div class="topbar-r">
+        <div class="chip live"><span class="dot"></span>Data Aktif</div>
+        <div class="chip" id="chip-date">—</div>
+      </div>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-grid" id="kpi-grid"></div>
+
+    <!-- Overdue banner -->
+    <div class="od-banner hidden" id="od-banner">
+      <div class="od-banner-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+      <div class="od-banner-text">
+        <h4 id="od-banner-title">Rekod Overdue Ditemui</h4>
+        <p id="od-banner-sub">Sila semak dan ambil tindakan segera</p>
+        <div class="od-list" id="od-list"></div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-grid">
+      <div class="card">
+        <div class="card-hdr"><div><div class="card-title">Status Pulangan</div><div class="card-sub">Taburan status semua rekod</div></div></div>
+        <div class="leg" id="leg-status"></div>
+        <div class="chart-wrap" style="height:200px"><canvas id="cStatus" role="img" aria-label="Status pulangan"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div><div class="card-title">Jenis Pemohon</div><div class="card-sub">Staf vs Pelajar vs Lain</div></div></div>
+        <div class="leg" id="leg-jenis"></div>
+        <div class="chart-wrap" style="height:200px"><canvas id="cJenis" role="img" aria-label="Jenis pemohon"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div><div class="card-title">Fakulti</div><div class="card-sub">FKA vs Bukan FKA</div></div></div>
+        <div class="leg" id="leg-fak"></div>
+        <div class="chart-wrap" style="height:200px"><canvas id="cFak" role="img" aria-label="Fakulti pemohon"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div><div class="card-title">Top 8 Alat Dipinjam</div><div class="card-sub">Mengikut kekerapan penggunaan</div></div></div>
+        <div class="chart-wrap" style="height:220px"><canvas id="cAlat" role="img" aria-label="Top alat dipinjam"></canvas></div>
+      </div>
+      <div class="card span2">
+        <div class="card-hdr"><div><div class="card-title">Trend Bulanan</div><div class="card-sub">Bilangan pinjaman setiap bulan</div></div></div>
+        <div class="chart-wrap" style="height:160px"><canvas id="cBulan" role="img" aria-label="Trend bulanan"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ REKOD PAGE ════ -->
+  <div class="page" id="page-rekod">
+    <div class="topbar">
+      <div><div class="topbar-title">Rekod Pinjaman</div><div class="topbar-sub">Semua rekod pinjaman peralatan IT</div></div>
+    </div>
+    <div class="filter-bar">
+      <div class="filter-row">
+        <div class="filter-grp">
+          <span class="filter-lbl">Bulan</span>
+          <select id="fBulan"><option value="all">Semua Bulan</option></select>
+        </div>
+        <div class="filter-grp">
+          <span class="filter-lbl">Status Pulangan</span>
+          <select id="fStatus">
+            <option value="all">Semua Status</option>
+            <option value="pulang">Telah Dipulangkan</option>
+            <option value="aktif">Belum Dipulangkan</option>
+            <option value="overdue">Overdue</option>
+          </select>
+        </div>
+        <div class="filter-grp">
+          <span class="filter-lbl">Jenis Pemohon</span>
+          <select id="fJenis"><option value="all">Semua Jenis</option></select>
+        </div>
+        <div class="filter-grp">
+          <span class="filter-lbl">Fakulti</span>
+          <select id="fFak"><option value="all">Semua Fakulti</option></select>
+        </div>
+        <div class="filter-grp" style="flex:2;min-width:200px;">
+          <span class="filter-lbl">Carian</span>
+          <input id="fCari" type="text" placeholder="Nama, email, ID alat, catatan...">
+        </div>
+        <button class="btn-reset" onclick="resetFilters()">
+          <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Reset
+        </button>
+      </div>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-hdr">
+        <div class="tbl-title-wrap">
+          <div class="tbl-title">Senarai Rekod</div>
+          <div class="tbl-rc" id="tbl-rc">— rekod</div>
+        </div>
+      </div>
+      <div class="tbl-sc">
+        <table>
+          <thead><tr>
+            <th>ID Pinjaman</th><th>Nama Peminjam</th><th>Jenis</th><th>Fakulti</th>
+            <th>ID Alat</th><th>Tarikh Pinjam</th><th>Jangka Pulang</th>
+            <th>Pulang Sebenar</th><th>Tujuan</th><th>Status</th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="nodata" id="nodata" style="display:none">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <p>Tiada rekod ditemui dengan penapis semasa.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ ALAT PAGE ════ -->
+  <div class="page" id="page-alat">
+    <div class="topbar">
+      <div><div class="topbar-title">Inventori Alat</div><div class="topbar-sub">Senarai peralatan IT dan kekerapan penggunaan</div></div>
+    </div>
+    <div class="alat-grid" id="alat-grid"></div>
+  </div>
+
+  <!-- ════ OVERDUE PAGE ════ -->
+  <div class="page" id="page-overdue">
+    <div class="topbar">
+      <div><div class="topbar-title">Rekod Overdue</div><div class="topbar-sub">Pinjaman yang melebihi tarikh jangka pulang</div></div>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-hdr">
+        <div class="tbl-title-wrap">
+          <div class="tbl-title" style="color:var(--red)">⚠ Perlu Tindakan Segera</div>
+          <div class="tbl-rc" id="od-rc">— rekod overdue</div>
+        </div>
+      </div>
+      <div class="tbl-sc">
+        <table>
+          <thead><tr>
+            <th>ID Pinjaman</th><th>Nama Peminjam</th><th>Email</th><th>ID Alat</th>
+            <th>Tarikh Pinjam</th><th>Jangka Pulang</th><th>Hari Overdue</th><th>Tujuan</th>
+          </tr></thead>
+          <tbody id="od-tbody"></tbody>
+        </table>
+        <div class="nodata" id="od-nodata" style="display:none">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <p>Tiada rekod overdue. Semua pinjaman dalam keadaan baik! ✓</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ PEMINJAM PAGE ════ -->
+  <div class="page" id="page-peminjam">
+    <div class="topbar">
+      <div><div class="topbar-title">Senarai Peminjam</div><div class="topbar-sub">Ringkasan aktiviti setiap peminjam</div></div>
+    </div>
+    <div class="tbl-card">
+      <div class="tbl-sc">
+        <table>
+          <thead><tr>
+            <th>Nama</th><th>Email</th><th>Jenis</th><th>Fakulti</th>
+            <th>Jumlah Pinjaman</th><th>Dipulangkan</th><th>Aktif</th><th>Overdue</th>
+          </tr></thead>
+          <tbody id="pmj-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+// ════════════════════════════════════
+// DATA
+// ════════════════════════════════════
+const BUILTIN_CSV = `ID Pinjaman,Email_Peminjam,Nama Peminjam,Jenis Pemohon,Status Fakulti,Tarikh Pinjam,Status,Email_Admin,Tarikh_Sah,ID_Alat,ID_Alat_2,ID_Alat_3,Tarikh_Jangka_Pulang,Tarikh_Pulang_Sebenar,Catatan_Peminjam,Catatan_Admin
+PJM-20260421-153002,mirzan@utm.my,Mirzan Firdaus,Staf,FKA,21/04/2026 15.30.46,Diluluskan,kamalm@utm.my,21/04/2026,IA0001228,,,22/04/2026,22/04/2026,Kegunaan BDR,Telah Dipulangkan
+PJM-20260429-102845,mohamadshazwan@utm.my,Dr.Shazwan,Staf,FKA,01/02/2025 12.30.00,Diluluskan,,,IA0001236,,,03/01/2025,03/01/2025,Kelas,telah dipulangkan
+PJM-20260429-104216,mohdkhairulidlan@utm.my,Dr.Khairul Idlan,Staf,FKA,07/01/2025 09.42.00,Diluluskan,it_fka@utm.my,29/04/2026,HA 0011383,,,10/01/2025,,Workshop,
+PJM-20260429-104451,kamalm@utm.my,Kamal,Staf,FKA,24/02/2025 16.30.00,Diluluskan,it_fka@utm.my,29/04/2026,HA0028126,,,,,Buat montaj,
+PJM-20260429-104841,shahrizani@utm.my,Shahrizan,Staf,Bukan FKA,25/02/2025 14.30.00,Diluluskan,it_fka@utm.my,29/04/2026,IA0001222,,,04/03/2025,,Seminar Empower women,
+PJM-20260429-105336,,Nadzir Hashim,Staf,Bukan FKA,10/04/2025 10.54.00,Diluluskan,it_fka@utm.my,29/04/2026,IA0001250,IA0001251,,14/04/2025,,,
+PJM-20260429-110738,,Dr.Norhidayah Hassan,Staf,FKA,17/04/2026 14.08.00,Diluluskan,it_fka@utm.my,29/04/2026,IA0001228,,,,,Meeting,
+PJM-20260429-110906,,Faizatulaszhar,Staf,FKA,17/04/2025 09.09.00,Diluluskan,it_fka@utm.my,29/04/2026,HA0043148,,,,,Mesyuarat/bengkel,
+PJM-20260429-113625,,Muhammad Safi hakimi bin Safian,Pelajar,FKA,25/04/2025 14.30.00,Diluluskan,it_fka@utm.my,29/04/2026,HA011254,hdmi01,,,,My STEM Bridge Challenge,
+PJM-20260429-114508,kamalm@utm.my,Kamal,Staf,FKA,25/04/2025 14.45.00,Diluluskan,it_fka@utm.my,29/04/2026,9C224956Q,,,,,Buat kerja dirumah,
+PJM-20260506-091201,mohdkhidir@utm.my,MOHD KHIDIR KHALID,Staf,FKA,06/05/2026 09.12.00,Diluluskan,it_fka@utm.my,06/05/2026,HA 0011383,,,06/05/2026,06/05/2026,Terima kasih.,telah dipulangkan
+PJM-20260511-090303,,Dr.Khairul Idlan,Staf,FKA,04/05/2025 21.04.10,Diluluskan,kamalm@utm.my,11/05/2026,HA011254,IA0001252,IA0001252,13/05/2025,,Bengkel,
+PJM-20260511-090632,,Safi,Pelajar,FKA,13/05/2025 10.07.20,Diluluskan,kamalm@utm.my,11/05/2026,IA0001222,,,16/05/2025,,Karnival Sukan FKA 2025,
+PJM-20260511-090833,,Nur Nisa Sabrina,Staf,FKA,16/05/2025 09.08.58,Diluluskan,kamalm@utm.my,11/05/2026,HA 0011383,,,19/05/2025,,SEMKA,
+PJM-20260511-091010,,Mazidah,Staf,FKA,28/05/2025 09.16.42,Diluluskan,,,IA0001236,,,02/06/2025,,Program di makmal komputer,
+PJM-20260511-091833,,Afiq Hakeem,Pelajar,FKA,11/06/2025 11.20.05,Diluluskan,kamalm@utm.my,11/05/2026,IA0001250,,,,,MAFKA 2025,
+PJM-20260511-092209,,Dr.Nadirah Darus,Staf,FKA,11/06/2025 09.25.38,Diluluskan,kamalm@utm.my,11/05/2026,HA011254,,,,,Mesyuarat,
+PJM-20260511-092618,,Kamal,Staf,FKA,13/06/2025 09.26.54,Diluluskan,kamalm@utm.my,11/05/2026,HA 0011383,,,20/06/2025,,Tugasan dirumah,
+PJM-20260511-093144,,Mirzan Firdaus,Staf,FKA,24/06/2025 09.52.26,Diluluskan,kamalm@utm.my,11/05/2026,HA 0011383,,,,,Kerja dirumah,
+PJM-20260511-095519,,NORAHIZAN MAHAT,Staf,Bukan FKA,08/07/2025 09.56.37,Diluluskan,kamalm@utm.my,11/05/2026,HA011254,hdmi01,,21/07/2025,,Program Kolej Perdana,
+PJM-20260511-095821,,Kamal,Staf,FKA,17/07/2025 09.58.40,Diluluskan,kamalm@utm.my,11/05/2026,HA 0011383,,,21/07/2025,,Tugasan dirumah,
+PJM-20260511-095936,,Ermaniza,Staf,FKA,29/07/2025 10.00.27,Diluluskan,kamalm@utm.my,11/05/2026,HA0028126,,,13/08/2025,,Tugasan dirumah,
+PJM-20260511-100110,,Dr.Khairul Hazman,Staf,FKA,11/08/2025 10.01.39,Diluluskan,kamalm@utm.my,11/05/2026,HA0043148,hdmi01,,20/08/2025,,Conference GeoFiesta,
+PJM-20260511-100400,,Faizatulaszhar,Staf,FKA,09/09/2025 10.04.12,Diluluskan,kamalm@utm.my,11/05/2026,9C224956Q,,,25/02/2026,,Kegunaan Pelajar Praktikal,
+PJM-20260511-100507,,Dr.Ponselvi,Staf,FKA,19/09/2025 10.05.27,Diluluskan,kamalm@utm.my,11/05/2026,HA0028126,HA 0011383,9C224956Q,26/09/2025,,ICWR 2025 -Everly Putrajaya,
+PJM-20260511-101751,,Mohd Zaid,Staf,FKA,29/09/2025 10.18.00,Diluluskan,kamalm@utm.my,11/05/2026,HA0043148,Ext1,,01/10/2025,,Kursus,
+PJM-20260511-101906,,Suhaimai Sabil,Staf,Bukan FKA,01/10/2025 10.19.32,Diluluskan,kamalm@utm.my,11/05/2026,IA0001222,,,19/10/2026,,Pendaftaran Pelajar,
+PJM-20260511-102213,,Dr.Muhammad Hasbi,Staf,FKA,28/10/2025 10.22.29,Diluluskan,kamalm@utm.my,11/05/2026,IA0001252,,,14/11/2025,,Program gotong royong FKA,
+PJM-20260511-102334,azwin@utm.my,Azwin Ahmad,Staf,FKA,30/10/2025 10.24.08,Diluluskan,kamalm@utm.my,11/05/2026,HA0028126,,,,,Mesyuarat,
+PJM-20260511-102456,,Noriyati,Staf,FKA,03/11/2025 10.25.13,Diluluskan,kamalm@utm.my,11/05/2026,HA0043148,HA0043147,,,,Bengkel,
+PJM-20260511-102639,,Nazirul Hakim,Pelajar,FKA,17/11/2025 10.26.56,Diluluskan,,,IA0001252,,,18/12/2025,,Kem Pemantapan PEKA,
+PJM-20260511-102805,,Dr.Josilva,Staf,FKA,21/11/2025 10.28.27,Diluluskan,,,IA0001251,Ext1,,24/11/2025,,Program Strategik HHRE,`;
+
+const BN = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogos','Sep','Okt','Nov','Dis'];
+const NOW = new Date();
+const PALETTE = ['#c8f135','#0ea47a','#2563eb','#f5a623','#e03a3a','#7c3aed','#0891b2','#db2777'];
+
+let rawData = [];
+let allCharts = {};
+
+// ════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════
+function parseDate(s) {
+  if (!s || !s.trim()) return null;
+  const clean = s.trim().split(' ')[0]; // take date part only
+  const p = clean.split('/');
+  if (p.length < 3) return null;
+  const y = p[2].length === 2 ? '20' + p[2] : p[2];
+  return new Date(+y, +p[1] - 1, +p[0]);
+}
+function fmtDate(s) {
+  const d = parseDate(s);
+  if (!d) return '—';
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+function normFak(s) {
+  const v = (s||'').trim().toLowerCase();
+  if (v === 'fka') return 'FKA';
+  if (v.includes('bukan') || v.includes('non')) return 'Bukan FKA';
+  return (s||'').trim() || 'Tidak Dinyatakan';
+}
+function isPulang(r) {
+  const ca = (r['Catatan_Admin']||'').toLowerCase();
+  const ps = (r['Tarikh_Pulang_Sebenar']||'').trim();
+  return ps !== '' || ca.includes('dipulangkan') || ca.includes('pulang');
+}
+function isOverdue(r) {
+  if (isPulang(r)) return false;
+  const jk = r['Tarikh_Jangka_Pulang'] || '';
+  if (!jk.trim()) return false;
+  const d = parseDate(jk);
+  return d && d < NOW;
+}
+function daysDiff(s) {
+  const d = parseDate(s);
+  if (!d) return 0;
+  return Math.floor((NOW - d) / 86400000);
+}
+function getMonth(s) {
+  const d = parseDate(s);
+  return d ? d.getMonth() : null;
+}
+function getYear(s) {
+  const d = parseDate(s);
+  return d ? d.getFullYear() : null;
+}
+function getAlats(r) {
+  return [r['ID_Alat'], r['ID_Alat_2'], r['ID_Alat_3']].map(a=>(a||'').trim()).filter(Boolean);
+}
+function killChart(id) {
+  if (allCharts[id]) { try { allCharts[id].destroy(); } catch(e){} delete allCharts[id]; }
+}
+
+// ════════════════════════════════════
+// NAV
+// ════════════════════════════════════
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const btns = document.querySelectorAll('.sb-link');
+  btns.forEach(b=>{ if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+name+"'")) b.classList.add('active'); });
+}
+
+// ════════════════════════════════════
+// INIT
+// ════════════════════════════════════
+function initData(csvText) {
+  Papa.parse(csvText, {
+    header: true,
+    skipEmptyLines: true,
+    complete: function(res) {
+      rawData = res.data.filter(r => r['Nama Peminjam'] && r['Nama Peminjam'].trim());
+      document.getElementById('chip-date').textContent = new Date().toLocaleDateString('ms-MY',{day:'2-digit',month:'short',year:'numeric'});
+      document.getElementById('sb-upd').textContent = 'Dikemaskini: ' + new Date().toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit'});
+      buildFilters();
+      renderOverview();
+      renderTable();
+      renderAlatPage();
+      renderOverduePage();
+      renderPeminjamPage();
+    }
+  });
+}
+
+// ════════════════════════════════════
+// FILTERS (for rekod page)
+// ════════════════════════════════════
+function buildFilters() {
+  const bulanSet = new Set(); const jenisSet = new Set(); const fakSet = new Set();
+  rawData.forEach(r => {
+    const m = getMonth(r['Tarikh Pinjam']);
+    if (m !== null) bulanSet.add(m);
+    if (r['Jenis Pemohon']) jenisSet.add(r['Jenis Pemohon'].trim());
+    fakSet.add(normFak(r['Status Fakulti']));
+  });
+  const fB = document.getElementById('fBulan');
+  fB.innerHTML = '<option value="all">Semua Bulan</option>';
+  [...bulanSet].sort((a,b)=>a-b).forEach(m => {
+    fB.innerHTML += `<option value="${m}">${BN[m]}</option>`;
+  });
+  const fJ = document.getElementById('fJenis');
+  fJ.innerHTML = '<option value="all">Semua Jenis</option>';
+  jenisSet.forEach(j => fJ.innerHTML += `<option value="${j}">${j}</option>`);
+  const fF = document.getElementById('fFak');
+  fF.innerHTML = '<option value="all">Semua Fakulti</option>';
+  fakSet.forEach(f => fF.innerHTML += `<option value="${f}">${f}</option>`);
+
+  ['fBulan','fStatus','fJenis','fFak','fCari'].forEach(id => {
+    document.getElementById(id).addEventListener('input', renderTable);
+    document.getElementById(id).addEventListener('change', renderTable);
+  });
+}
+function resetFilters() {
+  ['fBulan','fStatus','fJenis','fFak'].forEach(id => document.getElementById(id).value = 'all');
+  document.getElementById('fCari').value = '';
+  renderTable();
+}
+function getFiltered() {
+  const fB = document.getElementById('fBulan').value;
+  const fS = document.getElementById('fStatus').value;
+  const fJ = document.getElementById('fJenis').value;
+  const fF = document.getElementById('fFak').value;
+  const q  = (document.getElementById('fCari').value||'').toLowerCase();
+  return rawData.filter(r => {
+    const m = getMonth(r['Tarikh Pinjam']);
+    const mB = fB === 'all' || m == fB;
+    let mS = true;
+    if (fS === 'pulang')  mS = isPulang(r);
+    if (fS === 'aktif')   mS = !isPulang(r) && !isOverdue(r);
+    if (fS === 'overdue') mS = isOverdue(r);
+    const mJ = fJ === 'all' || (r['Jenis Pemohon']||'').trim() === fJ;
+    const mF = fF === 'all' || normFak(r['Status Fakulti']) === fF;
+    const mQ = !q ||
+      (r['Nama Peminjam']||'').toLowerCase().includes(q) ||
+      (r['Email_Peminjam']||'').toLowerCase().includes(q) ||
+      (r['ID_Alat']||'').toLowerCase().includes(q) ||
+      (r['ID_Alat_2']||'').toLowerCase().includes(q) ||
+      (r['Catatan_Peminjam']||'').toLowerCase().includes(q) ||
+      (r['ID Pinjaman']||'').toLowerCase().includes(q);
+    return mB && mS && mJ && mF && mQ;
+  });
+}
+
+// ════════════════════════════════════
+// RENDER TABLE (rekod page)
+// ════════════════════════════════════
+function renderTable() {
+  const fil = getFiltered();
+  document.getElementById('tbl-rc').textContent = fil.length + ' rekod ditunjukkan';
+  const tbody = document.getElementById('tbody');
+  const nodata = document.getElementById('nodata');
+  if (!fil.length) { tbody.innerHTML=''; nodata.style.display='block'; return; }
+  nodata.style.display = 'none';
+  const jw = r => r['Jenis Pemohon']||'';
+  const fk = r => normFak(r['Status Fakulti']);
+  tbody.innerHTML = fil.map(r => {
+    const p = isPulang(r); const od = isOverdue(r);
+    const alat = getAlats(r).join(' · ');
+    let sb = p
+      ? `<span class="bdg bdg-ok"><span class="bdg-dot"></span>Dipulangkan</span>`
+      : od
+        ? `<span class="bdg bdg-od"><span class="bdg-dot"></span>Overdue</span>`
+        : `<span class="bdg bdg-pending"><span class="bdg-dot"></span>Belum pulang</span>`;
+    return `<tr class="${od?'is-od':''}">
+      <td class="mono">${r['ID Pinjaman']||'—'}</td>
+      <td class="fw6">${r['Nama Peminjam']||'—'}</td>
+      <td><span class="bdg ${jw(r)==='Staf'?'bdg-staf':'bdg-pel'}">${jw(r)||'—'}</span></td>
+      <td><span class="bdg ${fk(r)==='FKA'?'bdg-fka':'bdg-nonfka'}">${fk(r)}</span></td>
+      <td class="alat-code">${alat||'—'}</td>
+      <td>${fmtDate(r['Tarikh Pinjam'])}</td>
+      <td>${fmtDate(r['Tarikh_Jangka_Pulang'])}</td>
+      <td>${fmtDate(r['Tarikh_Pulang_Sebenar'])}</td>
+      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink3)" title="${(r['Catatan_Peminjam']||'').replace(/"/g,"'")}">${r['Catatan_Peminjam']||'—'}</td>
+      <td>${sb}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════
+// RENDER OVERVIEW
+// ════════════════════════════════════
+function renderOverview() {
+  const d = rawData;
+  const tot = d.length;
+  const lulus = d.filter(r=>(r['Status']||'').toLowerCase().includes('lulus')).length;
+  const pulang = d.filter(r=>isPulang(r)).length;
+  const aktif = tot - pulang;
+  const od = d.filter(r=>isOverdue(r)).length;
+  const peminjam = new Set(d.map(r=>(r['Nama Peminjam']||'').trim().toLowerCase())).size;
+  const bukanFKA = d.filter(r=>normFak(r['Status Fakulti'])==='Bukan FKA').length;
+
+  // KPI
+  document.getElementById('kpi-grid').innerHTML = `
+  <div class="kpi k-ink">
+    <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+    <div class="kpi-lbl">Jumlah Rekod</div><div class="kpi-val">${tot}</div><div class="kpi-sub">Semua permohonan</div>
+  </div>
+  <div class="kpi k-lime">
+    <div class="kpi-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="kpi-lbl">Diluluskan</div><div class="kpi-val">${lulus}</div><div class="kpi-sub">${tot?Math.round(lulus/tot*100):0}% daripada jumlah</div>
+  </div>
+  <div class="kpi k-teal">
+    <div class="kpi-icon"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+    <div class="kpi-lbl">Telah Dipulangkan</div><div class="kpi-val">${pulang}</div><div class="kpi-sub">${tot?Math.round(pulang/tot*100):0}% kadar pulangan</div>
+  </div>
+  <div class="kpi k-amber">
+    <div class="kpi-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+    <div class="kpi-lbl">Masih Dipinjam</div><div class="kpi-val">${aktif}</div><div class="kpi-sub">${od>0?od+' overdue':'Tiada overdue'}</div>
+  </div>
+  ${od > 0 ? `<div class="kpi k-red">
+    <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+    <div class="kpi-lbl">Overdue</div><div class="kpi-val">${od}</div><div class="kpi-sub">Perlu tindakan segera</div>
+  </div>` : ''}
+  <div class="kpi k-blue">
+    <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+    <div class="kpi-lbl">Jumlah Peminjam</div><div class="kpi-val">${peminjam}</div><div class="kpi-sub">Individu unik</div>
+  </div>
+  <div class="kpi k-amber">
+    <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>
+    <div class="kpi-lbl">Bukan FKA</div><div class="kpi-val">${bukanFKA}</div><div class="kpi-sub">Luar fakulti</div>
+  </div>`;
+
+  // Overdue banner
+  const banner = document.getElementById('od-banner');
+  const odRecs = d.filter(r=>isOverdue(r));
+  if (od > 0) {
+    banner.classList.remove('hidden');
+    document.getElementById('od-banner-title').textContent = `${od} Rekod Overdue Ditemui`;
+    document.getElementById('od-banner-sub').textContent = 'Berikut adalah peminjam yang perlu dihubungi segera:';
+    document.getElementById('od-list').textContent = odRecs.map(r=>`• ${r['Nama Peminjam']} (${r['ID_Alat']||'—'}) — ${daysDiff(r['Tarikh_Jangka_Pulang'])} hari lewat`).join('\n');
+    document.getElementById('sb-od-badge').style.display='inline';
+    document.getElementById('sb-od-badge').textContent=od;
+  } else {
+    banner.classList.add('hidden');
+    document.getElementById('sb-od-badge').style.display='none';
+  }
+
+  // Charts
+  buildCharts(d, pulang, aktif, od);
+}
+
+function buildCharts(data, pulang, aktif, od) {
+  ['cStatus','cJenis','cFak','cAlat','cBulan'].forEach(killChart);
+  const opts = { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } } };
+  const aktifOk = aktif - od;
+
+  // Status donut
+  const statusLabels = ['Dipulangkan','Belum pulang',...(od>0?['Overdue']:[])];
+  const statusData   = [pulang, aktifOk, ...(od>0?[od]:[])];
+  const statusColors = ['#0ea47a','#f5a623','#e03a3a'];
+  document.getElementById('leg-status').innerHTML = statusLabels.map((l,i)=>
+    `<div class="leg-i"><span class="leg-sq" style="background:${statusColors[i]}"></span>${l} (${statusData[i]})</div>`).join('');
+  allCharts.cStatus = new Chart(document.getElementById('cStatus'),{
+    type:'doughnut',data:{datasets:[{data:statusData,backgroundColor:statusColors,borderWidth:0,hoverOffset:6}]},
+    options:{...opts,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label||statusLabels[ctx.dataIndex]}: ${ctx.raw}`}}}}
+  });
+
+  // Jenis bar
+  const jenisMap = {};
+  data.forEach(r=>{const j=(r['Jenis Pemohon']||'Lain').trim();jenisMap[j]=(jenisMap[j]||0)+1;});
+  const jL=Object.keys(jenisMap),jD=Object.values(jenisMap);
+  document.getElementById('leg-jenis').innerHTML = jL.map((l,i)=>
+    `<div class="leg-i"><span class="leg-sq" style="background:${PALETTE[i%PALETTE.length]}"></span>${l} (${jD[i]})</div>`).join('');
+  allCharts.cJenis = new Chart(document.getElementById('cJenis'),{
+    type:'bar',data:{labels:jL,datasets:[{data:jD,backgroundColor:PALETTE.slice(0,jL.length),borderRadius:6,borderSkipped:false}]},
+    options:{...opts,scales:{x:{grid:{display:false},ticks:{font:{size:11}}},y:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'rgba(0,0,0,.05)'}}}}
+  });
+
+  // Fakulti donut
+  const fakMap = {};
+  data.forEach(r=>{const f=normFak(r['Status Fakulti']);fakMap[f]=(fakMap[f]||0)+1;});
+  const fL=Object.keys(fakMap),fD=Object.values(fakMap);
+  const fC=['#c8f135','#f5a623','#e03a3a','#2563eb'];
+  document.getElementById('leg-fak').innerHTML = fL.map((l,i)=>
+    `<div class="leg-i"><span class="leg-sq" style="background:${fC[i%fC.length]}"></span>${l} (${fD[i]})</div>`).join('');
+  allCharts.cFak = new Chart(document.getElementById('cFak'),{
+    type:'doughnut',data:{datasets:[{data:fD,backgroundColor:fC.slice(0,fL.length),borderWidth:0,hoverOffset:6}]},
+    options:{...opts,cutout:'65%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${fL[ctx.dataIndex]}: ${ctx.raw}`}}}}
+  });
+
+  // Alat horizontal bar (top 8)
+  const aMap={};
+  data.forEach(r=>getAlats(r).forEach(a=>{const k=a.replace(/\s+/g,' ').trim();aMap[k]=(aMap[k]||0)+1;}));
+  const aS=Object.entries(aMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  allCharts.cAlat = new Chart(document.getElementById('cAlat'),{
+    type:'bar',
+    data:{labels:aS.map(([k])=>k),datasets:[{data:aS.map(([,v])=>v),backgroundColor:'#0ea47a',borderRadius:4,borderSkipped:false}]},
+    options:{...opts,indexAxis:'y',scales:{
+      x:{beginAtZero:true,ticks:{stepSize:1,font:{size:10}},grid:{color:'rgba(0,0,0,.05)'}},
+      y:{ticks:{font:{size:11,family:"'JetBrains Mono',monospace"}},grid:{display:false}}
+    }}
+  });
+
+  // Bulan line chart — Jan-Dis 2025 sahaja
+  const bMap={};
+  data.forEach(r=>{
+    const d=parseDate(r['Tarikh Pinjam']);
+    if(!d || d.getFullYear()!==2025) return;
+    const k='2025-'+String(d.getMonth()+1).padStart(2,'0');
+    bMap[k]=(bMap[k]||0)+1;
+  });
+  const bKeys=['2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12'];
+  const bL=BN.map(m=>m+' 2025');
+  allCharts.cBulan = new Chart(document.getElementById('cBulan'),{
+    type:'line',
+    data:{labels:bL,datasets:[{data:bKeys.map(k=>bMap[k]||0),borderColor:'#0ea47a',backgroundColor:'rgba(14,164,122,.08)',fill:true,tension:.4,pointBackgroundColor:'#0ea47a',pointRadius:4,pointHoverRadius:6}]},
+    options:{...opts,scales:{
+      x:{ticks:{font:{size:11},autoSkip:false,maxRotation:45},grid:{display:false}},
+      y:{beginAtZero:true,ticks:{stepSize:1,font:{size:10}},grid:{color:'rgba(0,0,0,.05)'}}
+    }}
+  });
+}
+
+// ════════════════════════════════════
+// RENDER ALAT PAGE
+// ════════════════════════════════════
+function renderAlatPage() {
+  const aMap={};
+  rawData.forEach(r=>getAlats(r).forEach(a=>{
+    const k=a.replace(/\s+/g,' ').trim();
+    aMap[k]=(aMap[k]||0)+1;
+  }));
+  const sorted=Object.entries(aMap).sort((a,b)=>b[1]-a[1]);
+  const max=sorted[0]?sorted[0][1]:1;
+  document.getElementById('alat-grid').innerHTML=sorted.map(([id,cnt])=>`
+    <div class="alat-card">
+      <div class="alat-id">${id}</div>
+      <div class="alat-count">${cnt}</div>
+      <div class="alat-lbl">kali dipinjam</div>
+      <div class="alat-bar-wrap"><div class="alat-bar" style="width:${Math.round(cnt/max*100)}%"></div></div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════
+// RENDER OVERDUE PAGE
+// ════════════════════════════════════
+function renderOverduePage() {
+  const recs = rawData.filter(r=>isOverdue(r));
+  document.getElementById('od-rc').textContent = recs.length + ' rekod overdue';
+  const tbody = document.getElementById('od-tbody');
+  const nodata = document.getElementById('od-nodata');
+  if (!recs.length) { tbody.innerHTML=''; nodata.style.display='block'; return; }
+  nodata.style.display='none';
+  tbody.innerHTML = recs.map(r=>{
+    const days=daysDiff(r['Tarikh_Jangka_Pulang']);
+    return `<tr class="is-od">
+      <td class="mono">${r['ID Pinjaman']||'—'}</td>
+      <td class="fw6">${r['Nama Peminjam']||'—'}</td>
+      <td class="mono" style="font-size:11px">${r['Email_Peminjam']||'—'}</td>
+      <td class="alat-code">${getAlats(r).join(' · ')||'—'}</td>
+      <td>${fmtDate(r['Tarikh Pinjam'])}</td>
+      <td>${fmtDate(r['Tarikh_Jangka_Pulang'])}</td>
+      <td><span class="bdg bdg-od">${days} hari</span></td>
+      <td style="color:var(--ink3);font-size:12px">${r['Catatan_Peminjam']||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════
+// RENDER PEMINJAM PAGE
+// ════════════════════════════════════
+function renderPeminjamPage() {
+  const map={};
+  rawData.forEach(r=>{
+    const k=(r['Nama Peminjam']||'').trim();
+    if(!k)return;
+    if(!map[k])map[k]={nama:k,email:r['Email_Peminjam']||'',jenis:r['Jenis Pemohon']||'',fak:normFak(r['Status Fakulti']),tot:0,pulang:0,aktif:0,od:0};
+    map[k].tot++;
+    if(isPulang(r))map[k].pulang++;
+    else if(isOverdue(r))map[k].od++;
+    else map[k].aktif++;
+  });
+  const rows=Object.values(map).sort((a,b)=>b.tot-a.tot);
+  document.getElementById('pmj-tbody').innerHTML=rows.map(p=>`
+    <tr>
+      <td class="fw6">${p.nama}</td>
+      <td class="mono" style="font-size:11px">${p.email||'—'}</td>
+      <td><span class="bdg ${p.jenis==='Staf'?'bdg-staf':'bdg-pel'}">${p.jenis||'—'}</span></td>
+      <td><span class="bdg ${p.fak==='FKA'?'bdg-fka':'bdg-nonfka'}">${p.fak}</span></td>
+      <td style="font-family:'Poppins',sans-serif;font-weight:700;font-size:18px">${p.tot}</td>
+      <td><span style="color:var(--teal);font-weight:600">${p.pulang}</span></td>
+      <td><span style="color:var(--amber);font-weight:600">${p.aktif}</span></td>
+      <td>${p.od>0?`<span class="bdg bdg-od">${p.od}</span>`:'<span style="color:var(--ink4)">—</span>'}</td>
+    </tr>`).join('');
+}
+
+// ════════════════════════════════════
+// CSV UPLOAD
+// ════════════════════════════════════
+document.getElementById('csvFile').addEventListener('change', function(e) {
+  const file = e.target.files[0]; if(!file)return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    initData(ev.target.result);
+    document.getElementById('sb-upd').textContent = 'CSV: ' + file.name;
+  };
+  reader.readAsText(file);
+  e.target.value='';
+});
+
+// ════════════════════════════════════
+// BOOT
+// ════════════════════════════════════
+initData(BUILTIN_CSV);
+</script>
+</body>
+</html>
