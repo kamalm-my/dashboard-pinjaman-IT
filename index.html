@@ -188,6 +188,26 @@ tr.is-od:hover{background:rgba(224,58,58,.07);}
   .charts-grid{grid-template-columns:1fr;}
   .kpi-grid{grid-template-columns:repeat(2,1fr);}
 }
+
+/* ── FAQ PAGE ── */
+.faq-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.faq-item { background: var(--surface); border: 1px solid var(--paper3); border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); transition: box-shadow .15s; }
+.faq-item:hover { box-shadow: var(--shadow-lg); }
+.faq-item.open { border-color: var(--lime-dk); }
+.faq-q { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 22px; background: none; border: none; cursor: pointer; text-align: left; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.5; transition: background .15s; }
+.faq-q:hover { background: var(--paper); }
+.faq-item.open .faq-q { background: #f5ffe0; color: var(--lime-dk); }
+.faq-arrow { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; flex-shrink: 0; transition: transform .25s; }
+.faq-item.open .faq-arrow { transform: rotate(180deg); }
+.faq-a { display: none; padding: 0 22px 18px; font-size: 13px; color: var(--ink2); line-height: 1.7; border-top: 1px solid var(--paper3); padding-top: 14px; }
+.faq-item.open .faq-a { display: block; }
+.faq-contact { background: linear-gradient(135deg, #f5ffe0, #edfff5); border: 1.5px solid rgba(155,191,26,.3); border-radius: var(--r); padding: 20px 24px; display: flex; align-items: center; gap: 16px; }
+.faq-contact-icon { width: 44px; height: 44px; background: #f0ffd4; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.faq-contact-icon svg { width: 20px; height: 20px; stroke: var(--lime-dk); fill: none; stroke-width: 2; stroke-linecap: round; }
+.faq-contact-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+.faq-contact-sub { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+.faq-contact-email { font-size: 13px; font-weight: 600; color: var(--lime-dk); margin-top: 6px; }
+
 </style>
 </head>
 <body>
@@ -226,6 +246,10 @@ tr.is-od:hover{background:rgba(224,58,58,.07);}
   <button class="sb-link" onclick="showPage('peminjam')">
     <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
     Peminjam
+  </button>
+  <button class="sb-link" onclick="showPage('faq')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    FAQ
   </button>
 
   <div class="sb-spacer"></div>
@@ -409,6 +433,92 @@ tr.is-od:hover{background:rgba(224,58,58,.07);}
           </tr></thead>
           <tbody id="pmj-tbody"></tbody>
         </table>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════ FAQ PAGE ════ -->
+  <div class="page" id="page-faq">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Soalan Lazim (FAQ)</div>
+        <div class="topbar-sub">Sistem Peminjaman Peralatan Teknologi Maklumat FKA</div>
+      </div>
+    </div>
+
+    <div class="faq-list" id="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>S1: Bagaimana jika permohonan masih belum diluluskan selepas beberapa hari?</span>
+          <svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          Sila hubungi pejabat IT FKA secara terus atau hantar emel kepada pentadbir sistem. Semak juga status terkini melalui aplikasi di bahagian Senarai Pinjaman.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>S2: Bolehkah saya meminjam lebih daripada satu jenis peralatan dalam satu permohonan?</span>
+          <svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          Ya. Sistem ini membenarkan peminjaman sehingga 3 jenis peralatan berbeza dalam satu permohonan di bahagian ID_Alat, ID_Alat_2 dan ID_Alat_3. Di bahagian ID_Alat adalah wajib diisi, manakala ID_Alat_2 dan ID_Alat_3 adalah pilihan.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>S3: Apakah yang perlu dilakukan jika peralatan yang dipinjam rosak atau hilang?</span>
+          <svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          Peminjam bertanggungjawab sepenuhnya ke atas keselamatan peralatan yang dipinjam. Sila laporkan sebarang kerosakan atau kehilangan kepada pejabat IT FKA dengan segera.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>S4: Bagaimana jika saya perlu memanjangkan tempoh pinjaman?</span>
+          <svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          Hubungi pentadbir IT FKA untuk meminta lanjutan tempoh. Pentadbir akan mengemaskini Tarikh_Jangka_Pulang dalam sistem setelah persetujuan diberikan.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>S5: Adakah notifikasi emel dihantar secara automatik?</span>
+          <svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          Ya. Sistem AppSheet dikonfigurasi untuk menghantar notifikasi emel automatik kepada Emel_Peminjam apabila status permohonan dikemas kini oleh admin.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>S6: Bolehkah saya menggunakan aplikasi ini pada telefon bimbit?</span>
+          <svg class="faq-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-a">
+          Ya. Sistem boleh diakses melalui pelayar web pada mana-mana peranti termasuk telefon bimbit dan tablet. Anda juga boleh memasang aplikasi AppSheet pada peranti Android atau iOS untuk pengalaman yang lebih baik.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="faq-contact">
+      <div class="faq-contact-icon">
+        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.22 2.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      </div>
+      <div>
+        <div class="faq-contact-title">Masih ada soalan lain?</div>
+        <div class="faq-contact-sub">Hubungi Pejabat IT FKA untuk bantuan lanjut</div>
+        <div class="faq-contact-email">📧 it_fka@utm.my</div>
       </div>
     </div>
   </div>
@@ -862,6 +972,19 @@ document.getElementById('csvFile').addEventListener('change', function(e) {
   reader.readAsText(file);
   e.target.value='';
 });
+
+
+// ════════════════════════════════════
+// FAQ TOGGLE
+// ════════════════════════════════════
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  // Toggle current
+  if (!isOpen) item.classList.add('open');
+}
 
 // ════════════════════════════════════
 // BOOT
